@@ -5,357 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>محاكي بوت العقود الآجلة - Live Binance</title>
   <style>
-    :root {
-      --bg1: #667eea;
-      --bg2: #764ba2;
-      --panel: #1a1a2e;
-      --card: #16213e;
-      --text: #eaeaea;
-      --muted: #a8a8a8;
-      --line: #0f3460;
-      --green: #00d084;
-      --red: #ff6b6b;
-      --orange: #ffa502;
-      --blue: #00d4ff;
+    :root{
+      --bg1:#667eea;
+      --bg2:#764ba2;
+      --panel:#1a1a2e;
+      --card:#16213e;
+      --text:#eaeaea;
+      --muted:#a8a8a8;
+      --line:#0f3460;
+      --green:#00d084;
+      --red:#ff6b6b;
+      --orange:#ffa502;
+      --blue:#00d4ff;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html, body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    .wrap {
-      max-width: 1300px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .title-box {
-      text-align: center;
-      color: white;
-      margin-bottom: 20px;
-    }
-
-    .title-box h1 {
-      font-size: 2.8rem;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.9;
-    }
-
-    .dashboard {
-      background: rgba(26, 26, 46, 0.95);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    }
-
-    .controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-      margin-bottom: 15px;
-      align-items: end;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .field label {
-      font-size: 0.9rem;
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    .field input,
-    .field select,
-    .field button {
-      height: 44px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 0 12px;
-      font-size: 1rem;
-      background: rgba(15, 52, 96, 0.6);
-      color: var(--text);
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    .field input:focus,
-    .field select:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
-    }
-
-    .btn {
-      border: none;
-      cursor: pointer;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--blue), #667eea);
-      color: white;
-      transition: all 0.2s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .status-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
-      border-radius: 12px;
-      padding: 12px;
-      font-weight: 700;
-      margin-bottom: 15px;
-    }
-
-    .status-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 10px var(--green);
-      margin-right: 10px;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.5;
-      }
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-
-    .stat {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      padding: 16px;
-      min-height: 100px;
-    }
-
-    .label {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-
-    .value {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--text);
-    }
-
-    .value.green {
-      color: var(--green);
-    }
-
-    .value.red {
-      color: var(--red);
-    }
-
-    .value.blue {
-      color: var(--blue);
-    }
-
-    .value.orange {
-      color: var(--orange);
-    }
-
-    .main {
-      display: grid;
-      grid-template-columns: 1.8fr 1fr;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      padding: 16px;
-      min-height: 400px;
-    }
-
-    .panel-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      margin-bottom: 12px;
-      color: var(--text);
-    }
-
-    .chart-box {
-      position: relative;
-      width: 100%;
-      height: 320px;
-      border-radius: 12px;
-      overflow: hidden;
-      background: linear-gradient(180deg, rgba(0, 212, 255, 0.1), rgba(102, 126, 234, 0.05));
-      border: 1px solid var(--line);
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    .signal {
-      display: inline-block;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-weight: 800;
-      font-size: 0.95rem;
-      margin-bottom: 12px;
-      border: 1px solid;
-    }
-
-    .signal.neutral {
-      background: rgba(0, 212, 255, 0.1);
-      color: var(--blue);
-      border-color: rgba(0, 212, 255, 0.3);
-    }
-
-    .signal.positive {
-      background: rgba(0, 208, 132, 0.1);
-      color: var(--green);
-      border-color: rgba(0, 208, 132, 0.3);
-    }
-
-    .signal.negative {
-      background: rgba(255, 107, 107, 0.1);
-      color: var(--red);
-      border-color: rgba(255, 107, 107, 0.3);
-    }
-
-    .mini {
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-
-    .trades {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      padding: 16px;
-    }
-
-    .table {
-      max-height: 350px;
-      overflow-y: auto;
-      margin-top: 10px;
-    }
-
-    .trade {
-      background: rgba(15, 52, 96, 0.4);
-      border: 1px solid var(--line);
-      border-left: 4px solid var(--blue);
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-
-    .trade.long {
-      border-left-color: var(--green);
-    }
-
-    .trade.short {
-      border-left-color: var(--red);
-    }
-
-    .trade-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .tag {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 800;
-    }
-
-    .tag.long {
-      background: rgba(0, 208, 132, 0.2);
-      color: var(--green);
-    }
-
-    .tag.short {
-      background: rgba(255, 107, 107, 0.2);
-      color: var(--red);
-    }
-
-    .trade-meta {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 8px;
-    }
-
-    .trade-meta span {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .pnl {
-      margin-top: 8px;
-      font-weight: 800;
-      font-size: 0.95rem;
-    }
-
-    .pnl.green {
-      color: var(--green);
-    }
-
-    .pnl.red {
-      color: var(--red);
-    }
-
-    @media (max-width: 980px) {
-      .main {
-        grid-template-columns: 1fr;
-      }
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:var(--text);min-height:100vh}
+    .wrap{max-width:1300px;margin:0 auto;padding:20px}
+    .title-box{text-align:center;color:#fff;margin-bottom:20px}
+    .title-box h1{font-size:2.8rem;margin-bottom:8px}
+    .subtitle{font-size:1.1rem;opacity:.9}
+    .dashboard{background:rgba(26,26,46,.95);border-radius:20px;padding:20px;box-shadow:0 15px 35px rgba(0,0,0,.3)}
+    .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:15px;align-items:end}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:.9rem;color:var(--muted);font-weight:700}
+    .field input,.field select,.field button{height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;font-size:1rem;background:rgba(15,52,96,.6);color:var(--text);outline:none;transition:all .2s ease}
+    .field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,212,255,.1)}
+    .btn{border:none;cursor:pointer;font-weight:800;background:linear-gradient(135deg,var(--blue),#667eea);color:white;transition:all .2s ease}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,212,255,.3)}
+    .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .status-row{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:12px;padding:12px;font-weight:700;margin-bottom:15px}
+    .status-dot{width:12px;height:12px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);margin-right:10px;animation:pulse 1.5s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:15px}
+    .stat{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;min-height:100px}
+    .label{font-size:.85rem;color:var(--muted);margin-bottom:8px;font-weight:700}
+    .value{font-size:2rem;font-weight:800;color:var(--text)}
+    .value.green{color:var(--green)}
+    .value.red{color:var(--red)}
+    .value.blue{color:var(--blue)}
+    .value.orange{color:var(--orange)}
+    .main{display:grid;grid-template-columns:1.8fr 1fr;gap:15px;margin-bottom:15px}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;min-height:400px}
+    .panel-title{font-size:1.1rem;font-weight:800;margin-bottom:12px;color:var(--text)}
+    .chart-box{position:relative;width:100%;height:320px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,rgba(0,212,255,.1),rgba(102,126,234,.05));border:1px solid var(--line)}
+    canvas{display:block;width:100%;height:100%}
+    .signal{display:inline-block;padding:10px 14px;border-radius:10px;font-weight:800;font-size:.95rem;margin-bottom:12px;border:1px solid}
+    .signal.neutral{background:rgba(0,212,255,.1);color:var(--blue);border-color:rgba(0,212,255,.3)}
+    .signal.positive{background:rgba(0,208,132,.1);color:var(--green);border-color:rgba(0,208,132,.3)}
+    .signal.negative{background:rgba(255,107,107,.1);color:var(--red);border-color:rgba(255,107,107,.3)}
+    .mini{color:var(--muted);font-size:.9rem;line-height:1.6}
+    .trades{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px}
+    .table{max-height:350px;overflow-y:auto;margin-top:10px}
+    .trade{background:rgba(15,52,96,.4);border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:10px;padding:12px;margin-bottom:10px}
+    .trade.long{border-left-color:var(--green)}
+    .trade.short{border-left-color:var(--red)}
+    .trade-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:800}
+    .tag.long{background:rgba(0,208,132,.2);color:var(--green)}
+    .tag.short{background:rgba(255,107,107,.2);color:var(--red)}
+    .trade-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;font-size:.8rem;color:var(--muted);margin-top:8px}
+    .trade-meta span{display:flex;justify-content:space-between}
+    .pnl{margin-top:8px;font-weight:800;font-size:.95rem}
+    .pnl.green{color:var(--green)}
+    .pnl.red{color:var(--red)}
+    @media (max-width:980px){.main{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -371,12 +85,10 @@
           <label>اسم العملة</label>
           <input id="symbol" type="text" value="BTCUSDT" placeholder="BTCUSDT / ETHUSDT / SOLUSDT" />
         </div>
-
         <div class="field">
           <label>الربح المستهدف ($)</label>
           <input id="targetProfit" type="number" value="4" min="1" max="20" step="0.1" />
         </div>
-
         <div class="field">
           <label>Leverage</label>
           <select id="leverage">
@@ -386,7 +98,6 @@
             <option value="10" selected>10x</option>
           </select>
         </div>
-
         <div class="field">
           <label>رأس المال ($)</label>
           <input id="capital" type="number" value="500" min="100" max="5000" step="50" />
@@ -403,41 +114,22 @@
       </div>
 
       <div class="stats">
-        <div class="stat">
-          <div class="label">💰 الرصيد الحالي</div>
-          <div class="value blue" id="balance">$500.00</div>
-        </div>
-
-        <div class="stat">
-          <div class="label">📈 السعر الحالي</div>
-          <div class="value orange" id="price">$0.00</div>
-        </div>
-
-        <div class="stat">
-          <div class="label">✅ إجمالي الأرباح</div>
-          <div class="value green" id="profit">$0.00</div>
-        </div>
-
-        <div class="stat">
-          <div class="label">🧾 عدد الصفقات</div>
-          <div class="value" id="tradeCount">0</div>
-        </div>
+        <div class="stat"><div class="label">💰 الرصيد الحالي</div><div class="value blue" id="balance">$500.00</div></div>
+        <div class="stat"><div class="label">📈 السعر الحالي</div><div class="value orange" id="price">$0.00</div></div>
+        <div class="stat"><div class="label">✅ إجمالي الأرباح</div><div class="value green" id="profit">$0.00</div></div>
+        <div class="stat"><div class="label">🧾 عدد الصفقات</div><div class="value" id="tradeCount">0</div></div>
       </div>
 
       <div class="main">
         <div class="panel">
-          <div class="panel-title">📊 الرسم البياني للسعر (بيانات حقيقية من Binance)</div>
-          <div class="chart-box">
-            <canvas id="priceChart"></canvas>
-          </div>
+          <div class="panel-title">📊 الرسم البياني للسعر</div>
+          <div class="chart-box"><canvas id="priceChart"></canvas></div>
         </div>
-
         <div class="panel">
           <div class="panel-title">📉 إشارة السوق</div>
           <div id="signalBox" class="signal neutral">انتظار الإشارة...</div>
           <div class="mini" id="signalText">البوت ينتظر تحديث السعر من Binance...</div>
-          <div style="height: 24px;"></div>
-
+          <div style="height:24px"></div>
           <div class="panel-title">📌 حالة الصفقة</div>
           <div class="mini" id="positionState">لا توجد صفقة مفتوحة</div>
         </div>
@@ -466,7 +158,8 @@
       signal: 'neutral',
       lastSignalText: 'الانتظار...',
       timer: null,
-      marketReady: false
+      marketReady: false,
+      lastCloseSide: null
     };
 
     const els = {
@@ -487,18 +180,12 @@
       chart: document.getElementById('priceChart')
     };
 
-    function formatMoney(v) {
-      return '$' + Number(v).toFixed(2);
-    }
+    function formatMoney(v){ return '$' + Number(v).toFixed(2); }
+    function normalizeSymbol(s){ return String(s || '').trim().toUpperCase(); }
 
-    function normalizeSymbol(s) {
-      return String(s || '').trim().toUpperCase();
-    }
-
-    function rsi(values, period = 14) {
+    function rsi(values, period = 14){
       if (values.length < period + 1) return 50;
-      let gains = 0,
-        losses = 0;
+      let gains = 0, losses = 0;
       for (let i = values.length - period; i < values.length - 1; i++) {
         const diff = values[i + 1] - values[i];
         if (diff >= 0) gains += diff;
@@ -508,50 +195,46 @@
       const avgLoss = losses / period;
       if (avgLoss === 0) return 100;
       const rs = avgGain / avgLoss;
-      return 100 - 100 / (1 + rs);
+      return 100 - (100 / (1 + rs));
     }
 
-    function fetchJson(url) {
+    function fetchJson(url){
       return fetch(url).then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
       });
     }
 
-    async function loadMarket() {
+    function evaluateSignalFromPriceSeries(){
+      const arr = state.priceHistory.slice(-50);
+      if (arr.length < 10) return 'neutral';
+      const first = arr[0];
+      const last = arr[arr.length - 1];
+      const momentum = ((last - first) / first) * 100;
+      const signalRsi = rsi(arr, 14);
+
+      if (signalRsi > 72 || momentum > 0.8) return 'strong-positive';
+      if (signalRsi < 28 || momentum < -0.8) return 'strong-negative';
+      return 'neutral';
+    }
+
+    async function loadMarket(){
       const symbol = normalizeSymbol(els.symbol.value);
       if (!symbol) {
-        alert('الرجاء إدخال اسم العملة');
+        alert('الرجاء إدخال اسم العملة مثل BTCUSDT');
         return false;
       }
-
       state.currentSymbol = symbol;
-
       try {
-        const priceRes = await fetchJson(
-          `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`
-        );
-        const klinesRes = await fetchJson(
-          `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1m&limit=200`
-        );
-
+        const priceRes = await fetchJson(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+        const klinesRes = await fetchJson(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1m&limit=200`);
         const closes = klinesRes.map((row) => Number(row[4]));
         state.currentPrice = Number(priceRes.price);
         state.priceHistory = closes;
-
-        const r = rsi(closes, 14);
-        if (r > 70) state.signal = 'strong-positive';
-        else if (r < 30) state.signal = 'strong-negative';
-        else state.signal = 'neutral';
-
-        if (state.signal === 'strong-positive') {
-          state.lastSignalText = 'إشارة قوية إيجابية — احتمال هبوط قوي (SHORT)';
-        } else if (state.signal === 'strong-negative') {
-          state.lastSignalText = 'إشارة قوية سلبية — احتمال صعود قوي (LONG)';
-        } else {
-          state.lastSignalText = 'لا توجد إشارة قوية حالياً';
-        }
-
+        state.signal = evaluateSignalFromPriceSeries();
+        if (state.signal === 'strong-positive') state.lastSignalText = 'إشارة قوية إيجابية — احتمال هبوط قوي (SHORT)';
+        else if (state.signal === 'strong-negative') state.lastSignalText = 'إشارة قوية سلبية — احتمال صعود قوي (LONG)';
+        else state.lastSignalText = 'لا توجد إشارة قوية حالياً';
         updateUI();
         drawChart();
         state.marketReady = true;
@@ -564,28 +247,19 @@
       }
     }
 
-    function openTrade(side) {
+    function openTrade(side){
       if (state.openPosition) return;
       const entry = state.currentPrice;
       const size = Math.max(0.05, Math.min(5, (state.balance / (entry * 0.01)) / state.leverage));
-      state.openPosition = {
-        side,
-        entryPrice: entry,
-        size,
-        pnl: 0,
-        createdAt: new Date().toLocaleTimeString()
-      };
-      state.lastSignalText =
-        side === 'SHORT' ? 'تم فتح صفقة شورت — انتظار الخروج' : 'تم فتح صفقة شراء — انتظار الخروج';
+      state.openPosition = { side, entryPrice: entry, size, pnl: 0, createdAt: new Date().toLocaleTimeString() };
+      state.lastSignalText = side === 'SHORT' ? 'تم فتح صفقة شورت — انتظار الخروج' : 'تم فتح صفقة شراء — انتظار الخروج';
       updateUI();
     }
 
-    function closeTrade(reason) {
+    function closeTrade(reason){
       if (!state.openPosition) return;
       const pos = state.openPosition;
-      const diff =
-        pos.side === 'LONG' ? state.currentPrice - pos.entryPrice : pos.entryPrice - state.currentPrice;
-
+      const diff = pos.side === 'LONG' ? state.currentPrice - pos.entryPrice : pos.entryPrice - state.currentPrice;
       const pnl = Number((diff * pos.size * state.leverage).toFixed(2));
       pos.pnl = pnl;
 
@@ -597,38 +271,33 @@
         reason,
         time: new Date().toLocaleTimeString()
       };
-
       state.tradeHistory.unshift(trade);
       state.tradeCount = state.tradeHistory.length;
       state.totalProfit += pnl;
       state.balance += pnl;
       state.openPosition = null;
-
+      state.lastCloseSide = pos.side;
       updateUI();
       renderTrades();
     }
 
-    function processSignal() {
+    function processSignal(){
       if (!state.marketReady) return;
-
-      const r = rsi(state.priceHistory, 14);
-      if (r > 70) state.signal = 'strong-positive';
-      else if (r < 30) state.signal = 'strong-negative';
-      else state.signal = 'neutral';
+      const signal = evaluateSignalFromPriceSeries();
+      state.signal = signal;
 
       if (!state.openPosition) {
-        if (state.signal === 'strong-positive') {
+        if (signal === 'strong-positive') {
           openTrade('SHORT');
-        } else if (state.signal === 'strong-negative') {
+        } else if (signal === 'strong-negative') {
           openTrade('LONG');
         } else {
-          state.lastSignalText = 'لا توجد إشارة قوية في الوقت الحالي';
+          state.lastSignalText = 'لا توجد إشارة قوية حالياً — الانتظار لفترة جديدة';
         }
       } else {
-        const diff =
-          state.openPosition.side === 'LONG'
-            ? state.currentPrice - state.openPosition.entryPrice
-            : state.openPosition.entryPrice - state.currentPrice;
+        const diff = state.openPosition.side === 'LONG'
+          ? state.currentPrice - state.openPosition.entryPrice
+          : state.openPosition.entryPrice - state.currentPrice;
 
         const pnl = Number((diff * state.openPosition.size * state.leverage).toFixed(2));
         state.openPosition.pnl = pnl;
@@ -640,17 +309,15 @@
           closeTrade('إغلاق للحماية');
           state.lastSignalText = 'تم إغلاق الصفقة بسبب حماية الخسارة';
         } else {
-          state.lastSignalText =
-            state.openPosition.side === 'LONG'
-              ? `شراء مفتوح — الربح الحالي: ${formatMoney(pnl)}`
-              : `شورت مفتوح — الربح الحالي: ${formatMoney(pnl)}`;
+          state.lastSignalText = state.openPosition.side === 'LONG'
+            ? `شراء مفتوح — الربح الحالي: ${formatMoney(pnl)}`
+            : `شورت مفتوح — الربح الحالي: ${formatMoney(pnl)}`;
         }
       }
-
       updateUI();
     }
 
-    function updateUI() {
+    function updateUI(){
       els.balance.textContent = formatMoney(state.balance);
       els.profit.textContent = formatMoney(state.totalProfit);
       els.tradeCount.textContent = String(state.tradeCount);
@@ -668,95 +335,51 @@
       }
 
       els.signalText.textContent = state.lastSignalText;
-
-      if (!state.openPosition) {
-        els.positionState.textContent = 'لا توجد صفقة مفتوحة';
-      } else {
+      if (!state.openPosition) els.positionState.textContent = 'لا توجد صفقة مفتوحة';
+      else {
         const sideText = state.openPosition.side === 'LONG' ? 'شراء' : 'شورت';
-        els.positionState.textContent = `${sideText} | الدخول: ${state.openPosition.entryPrice.toFixed(
-          2
-        )} | الربح/الخسارة: ${formatMoney(state.openPosition.pnl)}`;
+        els.positionState.textContent = `${sideText} | الدخول: ${state.openPosition.entryPrice.toFixed(2)} | الربح/الخسارة: ${formatMoney(state.openPosition.pnl)}`;
       }
+      els.statusText.textContent = state.botRunning ? 'البوت يعمل ✅' : 'البوت متوقف';
     }
 
-    function drawChart() {
-      const canvas = els.chart;
-      const ctx = canvas.getContext('2d');
-      const w = canvas.clientWidth || 600;
-      const h = canvas.clientHeight || 320;
-      const dpr = window.devicePixelRatio || 1;
-
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      ctx.clearRect(0, 0, w, h);
-
-      const values = state.priceHistory;
-      if (!values || values.length < 2) {
-        return;
-      }
-
-      const pad = 20;
-      const chartW = w - pad * 2;
-      const chartH = h - pad * 2;
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      const range = max - min || 1;
-
-      ctx.strokeStyle = 'rgba(100, 150, 200, 0.2)';
-      ctx.lineWidth = 1;
+    function drawChart(){
+      const canvas = els.chart; const ctx = canvas.getContext('2d');
+      const w = canvas.clientWidth || 600; const h = canvas.clientHeight || 320; const dpr = window.devicePixelRatio || 1;
+      canvas.width = w * dpr; canvas.height = h * dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      ctx.clearRect(0,0,w,h);
+      const values = state.priceHistory; if (!values || values.length < 2) return;
+      const pad = 20; const chartW = w - pad*2; const chartH = h - pad*2;
+      const min = Math.min(...values); const max = Math.max(...values); const range = max - min || 1;
+      ctx.strokeStyle = 'rgba(100,150,200,.2)'; ctx.lineWidth = 1;
       for (let i = 0; i <= 4; i++) {
-        const y = pad + (chartH / 4) * i;
-        ctx.beginPath();
-        ctx.moveTo(pad, y);
-        ctx.lineTo(w - pad, y);
-        ctx.stroke();
+        const y = pad + (chartH/4) * i; ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(w-pad,y); ctx.stroke();
       }
-
       ctx.beginPath();
-      values.forEach((v, i) => {
+      values.forEach((v,i) => {
         const x = pad + (i / (values.length - 1)) * chartW;
-        const y = pad + chartH - ((v - min) / range) * chartH;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        const y = pad + chartH - ((v - min)/range) * chartH;
+        if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
       });
-      ctx.strokeStyle = '#00d4ff';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-
-      const lastY = pad + chartH - ((state.currentPrice - min) / range) * chartH;
-      ctx.beginPath();
-      ctx.moveTo(pad, lastY);
-      ctx.lineTo(w - pad, lastY);
-      ctx.strokeStyle = 'rgba(0, 208, 132, 0.8)';
-      ctx.setLineDash([6, 6]);
-      ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.strokeStyle = '#00d4ff'; ctx.lineWidth = 2.5; ctx.stroke();
+      const lastY = pad + chartH - ((state.currentPrice - min)/range) * chartH;
+      ctx.beginPath(); ctx.moveTo(pad,lastY); ctx.lineTo(w-pad,lastY); ctx.strokeStyle = 'rgba(0,208,132,.8)'; ctx.setLineDash([6,6]); ctx.stroke(); ctx.setLineDash([]);
     }
 
-    function renderTrades() {
-      const items = state.tradeHistory;
-      if (!items.length) {
-        els.tradeLog.innerHTML = `
-          <div style="text-align: center; color: var(--muted); padding: 30px 10px;">
-            لا توجد صفقات بعد، سيظهر سجلها هنا تلقائياً.
-          </div>
-        `;
+    function renderTrades(){
+      const items = state.tradeHistory; if (!items.length) {
+        els.tradeLog.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px 10px;">لا توجد صفقات بعد، سيظهر سجلها هنا تلقائياً.</div>';
         return;
       }
-
-      els.tradeLog.innerHTML = items
-        .map((trade) => {
-          const sideClass = trade.side === 'LONG' ? 'long' : 'short';
-          const pnlClass = trade.pnl >= 0 ? 'green' : 'red';
-          const pnlText = `${trade.pnl >= 0 ? '+' : ''}${formatMoney(trade.pnl)}`;
-
-          return `
+      els.tradeLog.innerHTML = items.map((trade) => {
+        const sideClass = trade.side === 'LONG' ? 'long' : 'short';
+        const pnlClass = trade.pnl >= 0 ? 'green' : 'red';
+        const pnlText = `${trade.pnl >= 0 ? '+' : ''}${formatMoney(trade.pnl)}`;
+        return `
           <div class="trade ${sideClass}">
             <div class="trade-head">
               <span class="tag ${sideClass}">${trade.side === 'LONG' ? 'شراء (LONG)' : 'شورت (SHORT)'}</span>
-              <span style="color: var(--muted); font-size: 0.8rem;">${trade.time}</span>
+              <span style="color:var(--muted);font-size:.8rem;">${trade.time}</span>
             </div>
             <div class="trade-meta">
               <span><b>الدخول</b><em>${Number(trade.entryPrice).toFixed(2)}</em></span>
@@ -765,27 +388,17 @@
               <span><b>النوع</b><em>${trade.side === 'LONG' ? 'LONG' : 'SHORT'}</em></span>
             </div>
             <div class="pnl ${pnlClass}">${pnlText}</div>
-          </div>
-        `;
-        })
-        .join('');
+          </div>`;
+      }).join('');
     }
 
-    async function startBot() {
+    async function startBot(){
       const symbol = normalizeSymbol(els.symbol.value);
       const capital = Number(els.capital.value);
       const leverage = Number(els.leverage.value);
       const target = Number(els.targetProfit.value);
-
-      if (!symbol) {
-        alert('الرجاء إدخال رمز العملة مثل BTCUSDT');
-        return;
-      }
-
-      if (!capital || capital < 100) {
-        alert('رأس المال يجب أن يكون 100 دولار على الأقل');
-        return;
-      }
+      if (!symbol) { alert('الرجاء إدخال رمز العملة مثل BTCUSDT'); return; }
+      if (!capital || capital < 100) { alert('رأس المال يجب أن يكون 100 دولار على الأقل'); return; }
 
       state.botRunning = true;
       state.balance = capital;
@@ -797,29 +410,20 @@
       state.totalProfit = 0;
       state.openPosition = null;
       state.lastSignalText = 'يتم جلب البيانات الحية من Binance...';
+      state.lastCloseSide = null;
 
-      els.statusText.textContent = 'البوت يعمل ✅';
       els.startBtn.disabled = true;
+      updateUI();
 
       const ok = await loadMarket();
-      if (!ok) {
-        state.botRunning = false;
-        els.statusText.textContent = 'البوت متوقف ❌';
-        els.startBtn.disabled = false;
-        return;
-      }
+      if (!ok) { state.botRunning = false; els.startBtn.disabled = false; updateUI(); return; }
 
       const tick = async () => {
         if (!state.botRunning) return;
         try {
-          const priceData = await fetchJson(
-            `https://api.binance.com/api/v3/ticker/price?symbol=${state.currentSymbol}`
-          );
+          const priceData = await fetchJson(`https://api.binance.com/api/v3/ticker/price?symbol=${state.currentSymbol}`);
           state.currentPrice = Number(priceData.price);
-
-          const klines = await fetchJson(
-            `https://api.binance.com/api/v3/klines?symbol=${state.currentSymbol}&interval=1m&limit=200`
-          );
+          const klines = await fetchJson(`https://api.binance.com/api/v3/klines?symbol=${state.currentSymbol}&interval=1m&limit=200`);
           const closes = klines.map((x) => Number(x[4]));
           state.priceHistory = closes;
           processSignal();
@@ -832,17 +436,32 @@
       };
 
       clearInterval(state.timer);
-      state.timer = setInterval(tick, 2000);
+      state.timer = setInterval(tick, 1800);
       tick();
     }
 
-    els.startBtn.addEventListener('click', startBot);
-    els.symbol.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') startBot();
-    });
+    function stopBot(){
+      state.botRunning = false;
+      clearInterval(state.timer);
+      els.startBtn.disabled = false;
+      updateUI();
+      state.lastSignalText = 'تم إيقاف البوت يدويًا';
+      updateUI();
+    }
+
+    document.getElementById('startBtn').addEventListener('click', startBot);
+    document.getElementById('symbol').addEventListener('keydown', (e) => { if (e.key === 'Enter') startBot(); });
+    const stopBtn = document.createElement('button');
+    stopBtn.id = 'stopBtn';
+    stopBtn.className = 'btn';
+    stopBtn.style.height = '50px';
+    stopBtn.style.width = '100%';
+    stopBtn.style.marginTop = '12px';
+    stopBtn.textContent = '⏹ إيقاف البوت';
+    stopBtn.addEventListener('click', stopBot);
+    document.querySelector('.field').parentNode.appendChild(stopBtn);
 
     window.addEventListener('resize', drawChart);
-
     updateUI();
     renderTrades();
   </script>
