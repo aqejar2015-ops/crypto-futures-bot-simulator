@@ -6,495 +6,951 @@
     <title>محاكي بوت العقود الأجلة - Futures Bot Simulator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
+        :root {
+            --bg1: #0f172a;
+            --bg2: #111827;
+            --panel: #111827;
+            --panel2: #1f2937;
+            --card: #0b1220;
+            --line: #243244;
+            --text: #e5edf8;
+            --muted: #9cb2ca;
+            --green: #22c55e;
+            --red: #ef4444;
+            --orange: #f59e0b;
+            --blue: #60a5fa;
+            --purple: #8b5cf6;
+            --cyan: #2dd4bf;
+        }
+
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--bg1), var(--bg2));
+            color: var(--text);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            padding: 20px;
-            color: #333;
         }
 
-        .container {
+        .wrap {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 24px;
         }
 
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .control-panel {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             gap: 20px;
-            align-items: end;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        .form-group {
+        .title h1 {
+            margin: 0 0 6px 0;
+            font-size: clamp(1.7rem, 2vw, 2.5rem);
+        }
+
+        .title p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .status-pill {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.45);
+            color: var(--green);
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 12px var(--green);
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+
+        .controls {
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 22px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .field {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
-        label {
+        .field label {
+            font-size: 0.84rem;
+            color: var(--muted);
             font-weight: 600;
-            color: #667eea;
-            font-size: 0.95em;
         }
 
-        input, select {
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-
-        input:focus, select:focus {
+        .field input, .field select, .field button {
+            height: 48px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: rgba(15, 23, 42, 0.9);
+            color: var(--text);
+            padding: 0 14px;
+            font-size: 1rem;
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            font-family: inherit;
         }
 
-        button {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
+        .field input:focus, .field select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.22);
+        }
+
+        .field input::placeholder {
+            color: var(--muted);
+        }
+
+        .btn {
             cursor: pointer;
-            transition: all 0.3s ease;
+            border: none;
+            font-weight: 800;
+            transition: transform 0.15s ease, filter 0.15s ease;
+            font-family: inherit;
         }
 
-        .btn-start {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            grid-column: 1 / -1;
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.08);
         }
 
-        .btn-start:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        .btn:active {
+            transform: translateY(0px);
         }
 
-        .btn-start:disabled {
+        .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
 
-        .btn-stop {
-            background: #ff6b6b;
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue), var(--purple));
             color: white;
         }
 
-        .btn-stop:hover {
-            background: #ff5252;
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--orange), #f97316);
+            color: white;
         }
 
-        .stats-grid {
+        .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 22px;
         }
 
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            border-left: 5px solid #667eea;
+        .card {
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
 
-        .stat-label {
-            font-size: 0.9em;
-            color: #999;
-            margin-bottom: 8px;
-            font-weight: 500;
+        .card .label {
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            letter-spacing: 0.2px;
         }
 
-        .stat-value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #333;
+        .card .value {
+            font-size: clamp(1.5rem, 2vw, 2.3rem);
+            font-weight: 800;
         }
 
-        .stat-value.positive {
-            color: #4caf50;
+        .value.green {
+            color: var(--green);
         }
 
-        .stat-value.negative {
-            color: #ff6b6b;
+        .value.red {
+            color: var(--red);
         }
 
-        .stat-card.warning {
-            border-left-color: #ff9800;
+        .value.blue {
+            color: var(--blue);
         }
 
-        .stat-card.success {
-            border-left-color: #4caf50;
+        .value.orange {
+            color: var(--orange);
         }
 
-        .stat-card.danger {
-            border-left-color: #ff6b6b;
-        }
-
-        .main-grid {
+        .main {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 25px;
+            grid-template-columns: 2fr 1fr;
+            gap: 22px;
+            margin-bottom: 22px;
         }
 
-        .chart-container {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        .chart-box {
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px 18px 10px;
+            min-height: 420px;
         }
 
-        .chart-container h3 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 1.3em;
+        .chart-box h3, .panel h3 {
+            margin: 0 0 16px 0;
+            font-size: 1.05rem;
+            color: var(--text);
         }
 
-        .chart-wrapper {
+        .chart-wrap {
             position: relative;
-            height: 350px;
+            width: 100%;
+            height: 330px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(2, 6, 23, 0.9));
+            border: 1px solid var(--line);
         }
 
-        .trades-container {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
         }
 
-        .trades-container h3 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 1.3em;
+        .panel {
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
         }
 
-        .trades-list {
-            max-height: 500px;
-            overflow-y: auto;
+        .table {
+            max-height: 420px;
+            overflow: auto;
+            margin-top: 8px;
         }
 
-        .trade-item {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border-left: 4px solid;
-            background: #f9f9f9;
-            transition: all 0.3s ease;
+        .trade {
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--line);
+            background: rgba(15, 23, 42, 0.7);
         }
 
-        .trade-item:hover {
-            transform: translateX(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        .trade.long {
+            border-left: 4px solid var(--green);
         }
 
-        .trade-item.long {
-            border-left-color: #4caf50;
+        .trade.short {
+            border-left: 4px solid var(--red);
         }
 
-        .trade-item.short {
-            border-left-color: #ff6b6b;
+        .trade.closed {
+            opacity: 0.8;
         }
 
-        .trade-item.closed {
-            opacity: 0.7;
-        }
-
-        .trade-header {
+        .top {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 8px;
-            font-weight: 600;
         }
 
-        .trade-type {
+        .badge {
             display: inline-block;
             padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            font-weight: bold;
-            color: white;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
         }
 
-        .trade-type.long {
-            background: #4caf50;
+        .badge.long {
+            background: rgba(34, 197, 94, 0.18);
+            color: var(--green);
         }
 
-        .trade-type.short {
-            background: #ff6b6b;
+        .badge.short {
+            background: rgba(239, 68, 68, 0.18);
+            color: var(--red);
         }
 
-        .trade-type.closed {
-            background: #999;
+        .badge.closed {
+            background: rgba(148, 163, 184, 0.18);
+            color: #dbeafe;
         }
 
-        .trade-details {
-            font-size: 0.9em;
-            color: #666;
+        .trade .meta {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
+
+        .trade .meta span {
+            display: flex;
+            justify-content: space-between;
             gap: 10px;
         }
 
-        .trade-detail {
-            display: flex;
-            justify-content: space-between;
+        .pnl {
+            margin-top: 10px;
+            font-weight: 800;
+            font-size: 0.92rem;
         }
 
-        .trade-pnl {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid #e0e0e0;
-            font-weight: 600;
-            font-size: 0.95em;
+        .pnl.green {
+            color: var(--green);
         }
 
-        .trade-pnl.profit {
-            color: #4caf50;
+        .pnl.red {
+            color: var(--red);
         }
 
-        .trade-pnl.loss {
-            color: #ff6b6b;
-        }
-
-        .status-indicator {
+        .signal-box {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.82rem;
             display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 2s infinite;
         }
 
-        .status-indicator.active {
-            background: #4caf50;
+        .signal-strong-pos {
+            background: rgba(34, 197, 94, 0.14);
+            color: var(--green);
+            border: 1px solid rgba(34, 197, 94, 0.35);
         }
 
-        .status-indicator.inactive {
-            background: #999;
-            animation: none;
+        .signal-strong-neg {
+            background: rgba(239, 68, 68, 0.13);
+            color: var(--red);
+            border: 1px solid rgba(239, 68, 68, 0.35);
         }
 
-        .signal-indicator {
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.85em;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 8px;
+        .signal-neutral {
+            background: rgba(96, 165, 250, 0.12);
+            color: var(--blue);
+            border: 1px solid rgba(96, 165, 250, 0.25);
         }
 
-        .signal-indicator.strong-positive {
-            background: #c8e6c9;
-            color: #2e7d32;
+        .mini {
+            color: var(--muted);
+            font-size: 0.82rem;
+            margin-top: 6px;
         }
 
-        .signal-indicator.strong-negative {
-            background: #ffcdd2;
-            color: #c62828;
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--line);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
 
-        .signal-indicator.neutral {
-            background: #f5f5f5;
-            color: #666;
+        .autocomplete-list.show {
+            display: block;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .autocomplete-item {
+            padding: 12px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--line);
+            transition: background 0.2s ease;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
+        .autocomplete-item:hover {
+            background: rgba(96, 165, 250, 0.15);
+            color: var(--blue);
         }
 
-        .empty-state p {
-            margin-bottom: 10px;
+        .autocomplete-item:last-child {
+            border-bottom: none;
         }
 
-        .signal-details {
-            background: #f0f4ff;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 8px;
-            font-size: 0.85em;
-            color: #555;
+        .symbol-input-wrapper {
+            position: relative;
         }
 
-        @media (max-width: 1200px) {
-            .main-grid {
+        @media (max-width: 980px) {
+            .main {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
-            .control-panel {
+            .controls {
                 grid-template-columns: 1fr;
-            }
-
-            .btn-start {
-                grid-column: 1;
             }
 
             header h1 {
                 font-size: 1.8em;
             }
         }
-
-        .info-banner {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: #1565c0;
-            font-size: 0.95em;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🤖 محاكي بوت العقود الأجلة</h1>
-            <p>Futures Trading Bot Simulator - Binance Live Data</p>
-        </header>
+    <div class="wrap">
+        <div class="header">
+            <div class="title">
+                <h1>🤖 محاكي بوت العقود الآجلة</h1>
+                <p>Futures Bot Simulator — Binance Style</p>
+            </div>
+            <div class="status-pill">
+                <span class="dot"></span>
+                <span id="botStatusText">البوت متوقف</span>
+            </div>
+        </div>
 
-        <div class="control-panel">
-            <div class="form-group">
-                <label for="symbol">اختر العملة (الرمز):</label>
-                <select id="symbol">
-                    <option value="BTCUSDT">Bitcoin - BTCUSDT</option>
-                    <option value="ETHUSDT">Ethereum - ETHUSDT</option>
-                    <option value="BNBUSDT">BNB - BNBUSDT</option>
-                    <option value="ADAUSDT">Cardano - ADAUSDT</option>
-                    <option value="DOGEUSDT">Dogecoin - DOGEUSDT</option>
-                    <option value="XRPUSDT">XRP - XRPUSDT</option>
-                    <option value="SOLUSDT">Solana - SOLUSDT</option>
-                    <option value="LTCUSDT">Litecoin - LTCUSDT</option>
-                    <option value="MATICUSDT">Polygon - MATICUSDT</option>
-                    <option value="AVAXUSDT">Avalanche - AVAXUSDT</option>
-                </select>
+        <div class="controls">
+            <div class="field symbol-input-wrapper">
+                <label>اختيار العملة (اكتب الرمز)</label>
+                <input id="symbol" type="text" placeholder="مثال: BTCUSDT, ETHUSDT, أو أي عملة" maxlength="12" />
+                <div class="autocomplete-list" id="autocompleteList"></div>
             </div>
 
-            <div class="form-group">
-                <label for="capital">رأس المال ($):</label>
-                <input type="number" id="capital" value="500" min="100" max="10000" step="100">
+            <div class="field">
+                <label>رأس المال (دولار)</label>
+                <input id="capital" type="number" value="500" min="100" max="5000" step="50" />
             </div>
 
-            <div class="form-group">
-                <label for="leverage">Leverage:</label>
+            <div class="field">
+                <label>Leverage</label>
                 <select id="leverage">
                     <option value="1">1x</option>
                     <option value="2">2x</option>
                     <option value="5">5x</option>
-                    <option value="10">10x</option>
+                    <option value="10" selected>10x</option>
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="targetProfit">الربح المستهدف ($):</label>
-                <input type="number" id="targetProfit" value="4" min="1" max="100" step="0.1">
+            <div class="field">
+                <label>الربح المستهدف لكل صفقة</label>
+                <input id="targetProfit" type="number" value="4" min="1" max="20" step="0.1" />
             </div>
 
-            <button class="btn-start" id="startBtn">🚀 ابدأ البوت</button>
-        </div>
+            <div class="field">
+                <button class="btn btn-primary" id="startBtn" style="width: 100%;">ابدأ البوت</button>
+            </div>
 
-        <div class="info-banner" id="infoBanner" style="display: none;">
-            <span class="loading"></span>
-            <span id="infoText">جاري تحديث البيانات...</span>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">💰 الرصيد الحالي</div>
-                <div class="stat-value" id="balance">$500.00</div>
-            </div>
-            <div class="stat-card warning">
-                <div class="stat-label">📊 السعر الحالي</div>
-                <div class="stat-value" id="currentPrice">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">✅ إجمالي الأرباح</div>
-                <div class="stat-value positive" id="totalProfit">$0.00</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">🎯 عدد الصفقات</div>
-                <div class="stat-value" id="tradeCount">0</div>
+            <div class="field">
+                <button class="btn btn-secondary" id="stopBtn" style="width: 100%;">إيقاف البوت</button>
             </div>
         </div>
 
-        <div class="main-grid">
-            <div class="chart-container">
-                <h3>📈 رسم بياني للسعر</h3>
-                <div class="chart-wrapper">
-                    <canvas id="priceChart"></canvas>
+        <div class="stats">
+            <div class="card">
+                <div class="label">الرصيد الحالي</div>
+                <div class="value blue" id="balance">$500.00</div>
+            </div>
+
+            <div class="card">
+                <div class="label">السعر الحالي</div>
+                <div class="value orange" id="price">$0.00</div>
+            </div>
+
+            <div class="card">
+                <div class="label">إجمالي الأرباح</div>
+                <div class="value green" id="profit">$0.00</div>
+            </div>
+
+            <div class="card">
+                <div class="label">عدد الصفقات</div>
+                <div class="value" id="tradesCount">0</div>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="chart-box">
+                <h3>الرسم البياني للسعر</h3>
+                <div class="chart-wrap">
+                    <canvas id="priceCanvas"></canvas>
                 </div>
             </div>
 
-            <div class="chart-container">
-                <h3>📉 مؤشر الـ RSI (الزخم)</h3>
-                <div class="chart-wrapper">
-                    <canvas id="rsiChart"></canvas>
-                </div>
+            <div class="panel">
+                <h3>الإشارة الحالية</h3>
+                <div id="signalBox" class="signal-box signal-neutral">انتظار الإشارة...</div>
+                <div class="mini" id="signalText">البوت ينتظر تحليل السوق...</div>
+                <div style="height: 18px;"></div>
+
+                <h3>الحالة الحالية</h3>
+                <div id="positionStatus" class="mini" style="font-size: 0.9rem; color: #dbeafe;">لا توجد صفقة مفتوحة</div>
             </div>
         </div>
 
-        <div class="trades-container">
-            <h3>💼 سجل الصفقات</h3>
-            <div class="trades-list" id="tradesList">
-                <div class="empty-state">
-                    <p>لا توجد صفقات حتى الآن</p>
-                    <p>اختر عملة واضغط "ابدأ البوت" لبدء المحاكاة</p>
-                </div>
-            </div>
+        <div class="panel">
+            <h3>سجل الصفقات</h3>
+            <div class="table" id="tradesList"></div>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        const POPULAR_SYMBOLS = [
+            'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT',
+            'DOGEUSDT', 'ADAUSDT', 'AVAXUSDT', 'MATICUSDT', 'LTCUSDT',
+            'LINKUSDT', 'UNIUSDT', 'DOTUSDT', 'SHIBUSDT', 'TRXUSDT',
+            'VETUSDT', 'FILUSDT', 'ATOMUSDT', 'NEARUSDT', 'FTMUSDT'
+        ];
+
+        const state = {
+            botRunning: false,
+            balance: 500,
+            totalProfit: 0,
+            tradesCount: 0,
+            symbol: 'BTCUSDT',
+            leverage: 10,
+            targetProfit: 4,
+            currentPrice: 0,
+            priceHistory: [],
+            currentSignal: 'neutral',
+            position: null,
+            trades: [],
+            timer: null,
+            lastSignalText: 'انتظار الإشارة...',
+            lastEntryPrice: null,
+            lastOrderSide: null
+        };
+
+        const els = {
+            symbol: document.getElementById('symbol'),
+            capital: document.getElementById('capital'),
+            leverage: document.getElementById('leverage'),
+            targetProfit: document.getElementById('targetProfit'),
+            startBtn: document.getElementById('startBtn'),
+            stopBtn: document.getElementById('stopBtn'),
+            balance: document.getElementById('balance'),
+            price: document.getElementById('price'),
+            profit: document.getElementById('profit'),
+            tradesCount: document.getElementById('tradesCount'),
+            signalBox: document.getElementById('signalBox'),
+            signalText: document.getElementById('signalText'),
+            positionStatus: document.getElementById('positionStatus'),
+            tradesList: document.getElementById('tradesList'),
+            botStatusText: document.getElementById('botStatusText'),
+            priceCanvas: document.getElementById('priceCanvas'),
+            autocompleteList: document.getElementById('autocompleteList')
+        };
+
+        function formatMoney(v) {
+            return '$' + Number(v).toFixed(2);
+        }
+
+        function safeRandom(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function initPrice() {
+            const start = 100 + safeRandom(0, 40);
+            state.currentPrice = Number(start.toFixed(2));
+            state.priceHistory = [];
+            for (let i = 0; i < 80; i++) {
+                const drift = (Math.random() - 0.5) * 2.5;
+                const noise = (Math.random() - 0.5) * 3;
+                state.currentPrice = Number((state.currentPrice * (1 + (drift + noise) / 100)).toFixed(2));
+                state.priceHistory.push(state.currentPrice);
+            }
+            state.currentPrice = state.priceHistory[state.priceHistory.length - 1];
+        }
+
+        function computeTrendSignal() {
+            const arr = state.priceHistory.slice(-20);
+            if (arr.length < 2) return 'neutral';
+
+            const first = arr[0];
+            const last = arr[arr.length - 1];
+            const change = ((last - first) / first) * 100;
+            let signal = 50 + change * 4 + safeRandom(-10, 10);
+
+            if (signal > 75) return 'strong-positive';
+            if (signal < 25) return 'strong-negative';
+            return 'neutral';
+        }
+
+        function openTrade(side) {
+            if (state.position) return;
+
+            const entry = Number(state.currentPrice.toFixed(2));
+            const acctBalance = Number(state.balance);
+            const units = Math.max(0.05, Math.min(5, acctBalance / (entry * 0.01) / state.leverage));
+            const trade = {
+                id: Date.now() + Math.random(),
+                side,
+                entryPrice: entry,
+                size: units,
+                pnl: 0,
+                status: 'open',
+                createdAt: new Date().toLocaleTimeString(),
+            };
+
+            state.position = trade;
+            state.lastEntryPrice = entry;
+            state.lastOrderSide = side;
+
+            if (side === 'SHORT') {
+                state.lastSignalText = 'إشارة قوية إيجابية: تم فتح صفقة شورت';
+            } else {
+                state.lastSignalText = 'إشارة قوية سلبية: تم فتح صفقة شراء';
+            }
+
+            updateStats();
+            renderTrades();
+        }
+
+        function closeTrade(profitValue, reason) {
+            if (!state.position) return;
+
+            const trade = { ...state.position };
+            const finalPnl = Number(profitValue.toFixed(2));
+            trade.pnl = finalPnl;
+            trade.status = 'closed';
+            trade.closedAt = new Date().toLocaleTimeString();
+            trade.reason = reason;
+
+            state.totalProfit += finalPnl;
+            state.balance += finalPnl;
+            state.trades.push(trade);
+            state.tradesCount = state.trades.length;
+            state.position = null;
+
+            renderTrades();
+            updateStats();
+        }
+
+        function simulateTradeLogic() {
+            if (!state.botRunning) return;
+
+            const base = Number(state.currentPrice);
+            const drift = (Math.random() - 0.5) * 1.8;
+            const noise = (Math.random() - 0.5) * 2.8;
+            const newPrice = Number((base * (1 + (drift + noise) / 100)).toFixed(2));
+
+            state.priceHistory.push(newPrice);
+            if (state.priceHistory.length > 120) state.priceHistory.shift();
+
+            state.currentPrice = newPrice;
+
+            const signal = computeTrendSignal();
+            state.currentSignal = signal;
+
+            if (!state.position) {
+                if (signal === 'strong-positive') {
+                    openTrade('SHORT');
+                } else if (signal === 'strong-negative') {
+                    openTrade('LONG');
+                } else {
+                    state.lastSignalText = 'لا توجد إشارة قوية حالياً — الانتظار';
+                }
+            } else {
+                const pos = state.position;
+                const diff = pos.side === 'LONG'
+                    ? state.currentPrice - pos.entryPrice
+                    : pos.entryPrice - state.currentPrice;
+
+                const pnl = Number((diff * pos.size * state.leverage).toFixed(2));
+                state.position.pnl = pnl;
+
+                if (pnl >= Number(state.targetProfit)) {
+                    closeTrade(pnl, pos.side === 'LONG' ? 'الربح وصل إلى الهدف (شراء)' : 'الربح وصل إلى الهدف (شورت)');
+                    state.lastSignalText = `تم إغلاق الصفقة عند ربح ${formatMoney(state.targetProfit)}`;
+                    state.currentSignal = 'neutral';
+                } else if (pnl <= -3) {
+                    closeTrade(pnl, 'إغلاق تلقائي للحماية');
+                    state.lastSignalText = 'تم إغلاق الصفقة بسبب حماية الخسارة';
+                    state.currentSignal = 'neutral';
+                } else {
+                    state.lastSignalText = pos.side === 'LONG'
+                        ? `صفقة شراء مفتوحة — الربح الحالي: ${formatMoney(pnl)}`
+                        : `صفقة شورت مفتوحة — الربح الحالي: ${formatMoney(pnl)}`;
+                }
+            }
+
+            updateStats();
+            drawChart();
+        }
+
+        function updateStats() {
+            els.balance.textContent = formatMoney(state.balance);
+            els.profit.textContent = formatMoney(state.totalProfit);
+            els.tradesCount.textContent = String(state.tradesCount);
+            els.price.textContent = '$' + Number(state.currentPrice).toFixed(2);
+            els.signalBox.className = 'signal-box ' + (
+                state.currentSignal === 'strong-positive' ? 'signal-strong-pos' :
+                state.currentSignal === 'strong-negative' ? 'signal-strong-neg' :
+                'signal-neutral'
+            );
+            if (state.currentSignal === 'strong-positive') {
+                els.signalBox.textContent = 'إشارة قوية إيجابية — SHORT';
+            } else if (state.currentSignal === 'strong-negative') {
+                els.signalBox.textContent = 'إشارة قوية سلبية — LONG';
+            } else {
+                els.signalBox.textContent = 'انتظار الإشارة';
+            }
+            els.signalText.textContent = state.lastSignalText;
+
+            if (!state.position) {
+                els.positionStatus.textContent = 'لا توجد صفقة مفتوحة';
+            } else {
+                const sideText = state.position.side === 'LONG' ? 'شراء' : 'بيع شورت';
+                els.positionStatus.textContent =
+                    `${sideText} | سعر الدخول: ${state.position.entryPrice.toFixed(2)} | ربح/خسارة: ${formatMoney(state.position.pnl)}`;
+            }
+        }
+
+        function drawChart() {
+            const canvas = els.priceCanvas;
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+
+            const w = canvas.width;
+            const h = canvas.height;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            const pad = 28;
+            const chartW = rect.width - pad * 2;
+            const chartH = rect.height - pad * 2;
+
+            // Grid
+            ctx.strokeStyle = 'rgba(148,163,184,0.16)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = pad + (chartH / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(pad, y);
+                ctx.lineTo(rect.width - pad, y);
+                ctx.stroke();
+            }
+
+            const values = state.priceHistory;
+            if (!values.length) return;
+
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const range = max - min || 1;
+
+            ctx.beginPath();
+            values.forEach((val, i) => {
+                const x = pad + (i / (values.length - 1)) * chartW;
+                const y = pad + chartH - ((val - min) / range) * chartH;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Fill area
+            const line = new Path2D();
+            values.forEach((val, i) => {
+                const x = pad + (i / (values.length - 1)) * chartW;
+                const y = pad + chartH - ((val - min) / range) * chartH;
+                if (i === 0) line.moveTo(x, y);
+                else line.lineTo(x, y);
+            });
+            line.lineTo(rect.width - pad, rect.height - pad);
+            line.lineTo(pad, rect.height - pad);
+            line.closePath();
+
+            const grad = ctx.createLinearGradient(0, pad, 0, rect.height - pad);
+            grad.addColorStop(0, 'rgba(96,165,250,0.35)');
+            grad.addColorStop(1, 'rgba(96,165,250,0.05)');
+            ctx.fillStyle = grad;
+            ctx.fill(line);
+
+            // Current price line
+            const curY = pad + chartH - ((state.currentPrice - min) / range) * chartH;
+            ctx.beginPath();
+            ctx.moveTo(pad, curY);
+            ctx.lineTo(rect.width - pad, curY);
+            ctx.strokeStyle = 'rgba(34,197,94,0.8)';
+            ctx.setLineDash([6, 6]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = 'rgba(229,237,248,0.9)';
+            ctx.font = '12px sans-serif';
+            ctx.fillText('$' + state.currentPrice.toFixed(2), rect.width - 100, curY - 8);
+        }
+
+        function renderTrades() {
+            const items = state.trades.slice().reverse();
+            if (!items.length) {
+                els.tradesList.innerHTML = `
+                    <div style="padding: 30px 10px; text-align: center; color: #9cb2ca;">
+                        لا توجد صفقات بعد.<br>ابدأ البوت لبدء المحاكاة.
+                    </div>
+                `;
+                return;
+            }
+
+            els.tradesList.innerHTML = items.map(trade => {
+                const sideClass = trade.side === 'LONG' ? 'long' : 'short';
+                const pnlClass = trade.pnl >= 0 ? 'green' : 'red';
+                const pnlText = `${trade.pnl >= 0 ? '+' : ''}${formatMoney(trade.pnl)}`;
+
+                return `
+                    <div class="trade ${sideClass} ${trade.status === 'closed' ? 'closed' : ''}">
+                        <div class="top">
+                            <span class="badge ${trade.side === 'LONG' ? 'long' : 'short'}">
+                                ${trade.side === 'LONG' ? 'شراء' : 'شورت'}
+                            </span>
+                            <span class="mini">${trade.createdAt} → ${trade.closedAt || 'مفتوحة'}</span>
+                        </div>
+
+                        <div class="meta">
+                            <span><b>الدخول</b><em>${Number(trade.entryPrice).toFixed(2)}</em></span>
+                            <span><b>الحالة</b><em>${trade.status === 'closed' ? 'مغلقة' : 'مفتوحة'}</em></span>
+                            <span><b>النوع</b><em>${trade.side === 'LONG' ? 'LONG' : 'SHORT'}</em></span>
+                            <span><b>الحجم</b><em>${Number(trade.size).toFixed(2)}</em></span>
+                        </div>
+
+                        <div class="pnl ${pnlClass}">${pnlText}</div>
+                        <div class="mini">${trade.reason || 'حالة الصفقة'}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateAutocomplete() {
+            const val = els.symbol.value.toUpperCase();
+            const list = els.autocompleteList;
+
+            if (!val) {
+                list.classList.remove('show');
+                return;
+            }
+
+            const matches = POPULAR_SYMBOLS.filter(s => s.includes(val));
+
+            if (matches.length === 0) {
+                list.classList.remove('show');
+                return;
+            }
+
+            list.classList.add('show');
+            list.innerHTML = matches.map(symbol => `
+                <div class="autocomplete-item" data-symbol="${symbol}">${symbol}</div>
+            `).join('');
+
+            document.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    els.symbol.value = item.dataset.symbol;
+                    list.classList.remove('show');
+                });
+            });
+        }
+
+        function startBot() {
+            const capital = Number(els.capital.value);
+            const leverage = Number(els.leverage.value);
+            const target = Number(els.targetProfit.value);
+            const symbol = els.symbol.value.toUpperCase().trim();
+
+            if (!symbol) {
+                alert('الرجاء إدخال رمز العملة');
+                return;
+            }
+
+            if (!capital || capital < 100) {
+                alert('يجب أن يكون رأس المال 100 دولار على الأقل');
+                return;
+            }
+
+            state.balance = capital;
+            state.leverage = leverage;
+            state.targetProfit = target;
+            state.symbol = symbol;
+            state.botRunning = true;
+            state.trades = [];
+            state.totalProfit = 0;
+            state.tradesCount = 0;
+            state.position = null;
+            state.currentSignal = 'neutral';
+            state.lastSignalText = `البوت جاهز لـ ${symbol} — جاري تحليل السوق...`;
+            state.priceHistory = [];
+            initPrice();
+            drawChart();
+            updateStats();
+            renderTrades();
+
+            els.botStatusText.textContent = 'البوت يعمل';
+            els.startBtn.disabled = true;
+
+            clearInterval(state.timer);
+            state.timer = setInterval(simulateTradeLogic, 1800);
+        }
+
+        function stopBot() {
+            state.botRunning = false;
+            clearInterval(state.timer);
+            els.botStatusText.textContent = 'البوت متوقف';
+            els.startBtn.disabled = false;
+            state.lastSignalText = 'تم إيقاف البوت يدوياً';
+            updateStats();
+        }
+
+        els.symbol.addEventListener('input', updateAutocomplete);
+        els.startBtn.addEventListener('click', startBot);
+        els.stopBtn.addEventListener('click', stopBot);
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.symbol-input-wrapper')) {
+                els.autocompleteList.classList.remove('show');
+            }
+        });
+
+        window.addEventListener('resize', drawChart);
+
+        initPrice();
+        drawChart();
+        updateStats();
+        renderTrades();
+    </script>
 </body>
 </html>
